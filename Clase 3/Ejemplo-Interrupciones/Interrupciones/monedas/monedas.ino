@@ -49,6 +49,8 @@ bool talanqueraState = 0;
 const int buttonPin = 2; 
 volatile bool presionado = false; 
 
+// Fotorresistencia 
+const int fotoPin = A0; 
 
 void setup() {
   // Boton para la interrupcion 
@@ -71,11 +73,15 @@ void setup() {
   talanquera.write(0); 
   delay(1000); 
   talanquera.write(90);
+  lcd.clear();
 }
 
 // 
 
-void loop() { 
+void loop() {
+  int fotovalue = analogRead(fotoPin);
+  lcd.setCursor(0,0); 
+  lcd.print(fotovalue);
   lcd.display();
   delay(500);
   lcd.noDisplay();
