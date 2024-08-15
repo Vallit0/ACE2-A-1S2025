@@ -173,6 +173,8 @@ void moverTalanquera() {
 }
 
 ```
+![image](https://github.com/user-attachments/assets/91bd33b9-fcf6-4db8-ae50-9d4ca0ca332b)
+
 
 ### 🔍 Explicación
 - **Control del Servo**: Mueve la talanquera a 90 grados si está en 0, o la vuelve a 0 si está en 90 grados, alternando el estado.
