@@ -20,6 +20,11 @@ Este código implementa un sistema de control utilizando varios componentes, com
 #define IR_PIN  4 // Pin del sensor IR para salida
 
 ```
+![image](https://github.com/user-attachments/assets/b690434d-66a6-4ee3-9ce6-8c10ec16ccd4)
+![image](https://github.com/user-attachments/assets/be7cb71c-8dac-40f7-8726-c72798a9b814)
+
+![image](https://github.com/user-attachments/assets/e51c7c3a-8542-45b9-808a-d0e2af359da6)
+
 
 ### 🔍 Explicación
 - **Librerías**: Se incluyen las librerías necesarias para controlar el lector RFID (MFRC522), un servo, una pantalla LCD I2C, y la EEPROM.
@@ -46,6 +51,8 @@ const long interval = 500;
 #define UID_LENGTH 4 // Longitud del UID
 
 ```
+![image](https://github.com/user-attachments/assets/3bfe20c3-559d-45b1-a9c7-03980d34a449)
+
 
 ### 🔍 Explicación
 - **Objetos**: Se crean los objetos `mfrc522`, `talanquera`, y `lcd` para manejar el RFID, el servo, y la pantalla LCD respectivamente.
@@ -85,6 +92,7 @@ void setup() {
 }
 
 ```
+![image](https://github.com/user-attachments/assets/b3e15702-6732-4377-b1ca-edce56e6ab31)
 
 ### 🔍 Explicación
 - **Inicialización**: Configura la comunicación serial, inicia el lector RFID, el servo, y la pantalla LCD.
@@ -191,6 +199,9 @@ void processRFID() {
 }
 
 ```
+
+![image](https://github.com/user-attachments/assets/1913aa0c-9672-4640-aced-76e2ec44ce17)
+
 
 ### 🔍 Explicación
 - **Lectura de Tarjeta RFID**: Verifica si hay una nueva tarjeta RFID presente. Si la tarjeta no está registrada en la EEPROM, la guarda; de lo contrario, indica que ya está registrada.
