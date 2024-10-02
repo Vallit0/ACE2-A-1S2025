@@ -1,0 +1,93 @@
+#include <Arduino.h>
+#include <SPI.h>
+#include <MFRC522.h>
+#include <Servo.h>
+
+#define SS_PIN 10
+#define RST_PIN 9
+#define SERVO_PIN 3 // Define el pin al que está conectado el servo
+
+MFRC522 rfid(SS_PIN, RST_PIN);
+Servo myServo; // Crea un objeto Servo
+
+String tag_enviar = "tag:"; 
+
+void setup() {
+  Serial.begin(9600);
+  SPI.begin();
+  rfid.PCD_Init();
+  myServo.attach(SERVO_PIN); // Adjunta el servo al pin definido
+  myServo.write(0); // Inicializa el servo en la posición 0 grados
+  Serial.println("Scan an RFID tag");
+}
+
+/// En esta ocasion hay estados 
+void loop() {
+  // Estado en el que se encuentra el automata
+  static int state = 0;
+  // DATOS RFID
+  static String rfidData = "";
+
+  // 1 - Enviar los datos 
+  // 2 - Saber cual es la respuesta 
+  // SYN/ACK - Redes de Computadores
+
+  switch (state) {
+    case 0:
+      // Estado 0: Enviar datos del sensor y, al mismo tiempo, esperar recibir datos RFID
+      Serial.println("humedad: 50");
+
+      // Al mismo tiempo, verificamos si hay una tarjeta RFID presente
+      if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()) {
+        //Serial.print("UID tag: ");
+        rfidData = "tag:"; // Solicitamos que llevase un estilo de emulacion del MQTT /tag 
+        for (byte i = 0; i < rfid.uid.size; i++) {
+          //Serial.print(rfid.uid.uidByte[i] < 0x10 ? " 0" : " ");
+          //Serial.print(rfid.uid.uidByte[i], HEX);
+          rfidData.concat(String(rfid.uid.uidByte[i] < 0x10 ? " 0" : " "));
+          rfidData.concat(String(rfid.uid.uidByte[i], HEX));
+        }
+        Serial.println();
+        state = 1; // Cambia al estado 1 después de leer el RFID
+      }
+
+      delay(500); // Espera un poco antes de volver a intentar (opcional)
+      break;
+
+    case 1:
+      // Estado 1: Enviar datos RFID por Serial
+      //Serial.print("Sending RFID data: ");
+      Serial.println(rfidData);
+      state = 2;  // Avanza al estado 2 para esperar respuesta
+      break;
+
+    case 2:
+      // Estado 2: Esperar respuesta por Serial
+      //Serial.println("estado 2");
+      if (Serial.available() > 0) {
+        String response = Serial.readString();
+        Serial.print("Received response: ");
+        Serial.println(response);
+        Serial.println(response == "MOVE_SERVO\n");
+        if (response == "MOVE_SERVO\n") {
+          Serial.println("Moving servo...");
+          state = 3;  // Si la respuesta es "MOVE_SERVO", avanza al estado 3
+        } else {
+          state = 0;  // Volver al estado 0 si la respuesta no es la esperada
+        }
+      }
+      break;
+
+    case 3:
+      // Estado 3: Mover el servo dependiendo de la respuesta
+      Serial.println("Moving servo...");
+      myServo.write(90);    // Mueve el servo a 90 grados
+      delay(1000);          // Espera 1 segundo
+      myServo.write(0);     // Vuelve el servo a la posición 0 grados
+      delay(1000);          // Espera otro segundo
+      rfid.PICC_HaltA();    // Detiene la lectura RFID
+      rfid.PCD_StopCrypto1(); // Detiene el cifrado del lector RFID
+      state = 0;  // Vuelve al estado 0 después de mover el servo
+      break;
+  }
+}
