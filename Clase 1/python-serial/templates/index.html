@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #chatbox { width: 80%; max-width: 500px; height: 400px; border: 1px solid #ccc; padding: 10px; overflow-y: auto; margin: auto; }
+        input { width: 80%; padding: 10px; margin-top: 10px; }
+        button { padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>AI Chatbot (Ollama)</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="message" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        async function sendMessage() {
+            let message = document.getElementById("message").value;
+            if (!message.trim()) return;
+
+            let chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+
+            let response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message })
+            });
+
+            let data = await response.json();
+            chatbox.innerHTML += `<p><strong>AI:</strong> ${data.response}</p>`;
+
+            document.getElementById("message").value = "";  // Clear input
+            chatbox.scrollTop = chatbox.scrollHeight;  // Auto-scroll
+        }
+    </script>
+</body>
+</html>
